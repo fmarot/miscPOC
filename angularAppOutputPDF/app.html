@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html lang="en" ng-app="oleaReports">
+
+<head>
+	<meta charset="utf-8">
+	<title>Olea Report</title>
+	
+	<script src="./misc/jquery.js"></script>
+	<script src="./misc/angular.js"></script>
+	
+	
+	<script>
+	'use strict';
+	
+	angular.module('oleaReports', []);
+	
+	function mainController($scope, $http, $route, $routeParams) {
+		$scope.imgWidth = 200;
+	}
+	
+	</script>
+	
+</head>
+
+<body contenteditable="true">
+
+	<div ng-controller="mainController" >
+		
+		<input id="imagesSizeInput" ng-model="imgWidth" /> </br>
+		<label id="myLabel">Lorem Ipsum</label> </br>
+		<img alt="" src="misc/angular.jpeg" width="{{imgWidth}}" id="firstImage"> </br>
+		<img alt="" src="misc/angular.jpeg" width="{{imgWidth}}"> </br>
+		
+		<img alt="" src="misc/angular.jpeg" width="{{imgWidth}}"> </br>
+		
+		imgWidth = {{imgWidth}}	</br>
+
+	</div>
+
+</body>
+
+
+</html>
