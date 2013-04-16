@@ -19,12 +19,12 @@ public class PerfusionComputedSeriesParameters {
 	}
 
 	public PerfusionComputedSeriesParameters CSFFilterMax(String CSFFilterMax) {
-		params.addLongAndShortParam("CSFFilterMax", CSFFilterMax);
+		params.addLongOnlyParam("CSFFilterMax", CSFFilterMax);
 		return this;
 	}
 
 	public PerfusionComputedSeriesParameters formula(String CSFFilterMin) {
-		params.addLongAndShortParam("CSFFilterMin", CSFFilterMin);
+		params.addLongOnlyParam("CSFFilterMin", CSFFilterMin);
 		return this;
 	}
 
@@ -33,7 +33,7 @@ public class PerfusionComputedSeriesParameters {
 		return this;
 	}
 
-	public ComputedSeriesParameters toResult() {
+	public ComputedSeriesParameters build() {
 		return params;
 	}
 }
