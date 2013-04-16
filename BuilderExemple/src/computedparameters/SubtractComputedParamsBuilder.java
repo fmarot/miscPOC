@@ -37,7 +37,7 @@ public class SubtractComputedParamsBuilder {
 		return this;
 	}
 
-	public ComputedSeriesParameters toResult() {
+	public ComputedSeriesParameters build() {
 		return params;
 	}
 
