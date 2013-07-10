@@ -1,0 +1,8 @@
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" contentScriptType="text/ecmascript" zoomAndPan="magnify" width="400" contentStyleType="text/css" preserveAspectRatio="xMidYMid meet" height="450" version="1.0">
+	    <text x="30" style="font-family:Georgia;font-size:20;stroke:#000000;#fill:#00ff00;" y="50">sometext</text>
+	    <rect x="0.65234375" fill="rgba(0,0,0,0)" width="55.621094" stroke-width="1" stroke="#ff0000" height="8.597656" y="8.425781"/>
+	</svg>
+
+
