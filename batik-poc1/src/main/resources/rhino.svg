@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+  <circle cx="50" cy="50" r="50" fill="green" onclick="showFrame()"/>
+  <script type="text/ecmascript">
+    importPackage(Packages.javax.swing);
+
+    function showFrame() {
+      var frame = new JFrame("My test frame");
+      var label = new JLabel("Hello from Java objects created in ECMAScript!");
+      label.setHorizontalAlignment(SwingConstants.CENTER);
+      frame.getContentPane().add(label);
+      frame.setSize(400, 100);
+      frame.setVisible(true);
+      frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    }
+  </script>
+</svg>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+	<svg>
+	
+	<script type="text/javascript">
+	<![CDATA[
+	var redVal=0;
+	var greenVal=0;
+	var blueVal=0;
+	
+	function changeCol(evt)
+	{
+	   var targetshape = evt.getTarget();
+	   redVal = Math.round(Math.random()*255);
+	   greenVal = Math.round(Math.random()*255);
+	   blueVal = Math.round(Math.random()*255);
+	   targetshape.setAttribute("fill",
+	         "rgb(" + redVal + "," + greenVal + "," + blueVal + ")");
+	
+	}
+	// ]]>
+	</script>
+	    <circle cx="200" cy="200" r="100" fill="blue" 
+	          onmouseover="evt.target.setAttribute('fill', 'red')"
+	          onmouseout="evt.target.setAttribute('fill', 'blue')" />
+	</svg>
+
+

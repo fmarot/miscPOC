@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.swing.svg.AbstractJSVGComponent;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,7 +26,7 @@ public class SvgGlassPaneExample {
 	public SvgGlassPaneExample(JPanel panel) {
 		panel.removeAll();
 		canvas = new JSVGCanvas();
-		canvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
+		canvas.setDocumentState(AbstractJSVGComponent.ALWAYS_DYNAMIC);
 		canvas.setSize(400, 400);
 		canvas.setDocument(buildDocument());
 		panel.add(canvas);

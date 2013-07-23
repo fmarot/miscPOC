@@ -1,27 +1,24 @@
 package com.teamtter.svg;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JComponent;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.batik.swing.JSVGCanvas;
-import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
-import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
-import org.apache.batik.swing.svg.GVTTreeBuilderAdapter;
-import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
-import org.w3c.dom.Element;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
-
 @Slf4j
-public class SVGApplication extends JFrame {
+public class SVGApplication extends JFrame implements SelectedPartListener, ActionListener {
+
+	private JButton	addArrowButton;
+	private JButton	addMarkButton;
 
 	public static void main(String[] args) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
@@ -29,82 +26,55 @@ public class SVGApplication extends JFrame {
 			@Override
 			public void run() {
 				String filename = "countries.svg";
-				//				String filename = "test.svgz.uncompressed";
+				//				String filename = "test.svg";
+				//				String filename = "circle.svg";
 				File svgFile = new File("src/main/resources/" + filename);
-				SVGApplication app;
-				try {
-					app = new SVGApplication(svgFile);
-					app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-					app.setSize(400, 400);
-					app.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				SVGApplication app = new SVGApplication(svgFile);
+				app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				app.setSize(400, 400);
+				app.setVisible(true);
+				app.pack();
 			}
 		});
 	}
 
-	public SVGApplication(File svgFile) throws Exception {
-		JComponent comp = createComponents(svgFile);
-		getContentPane().add(comp);
+	public SVGApplication(File svgFile) {
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		JPanel controlsPanel = new JPanel(new FlowLayout());
+		addArrowButton = new JButton("add Arrow");
+		addArrowButton.addActionListener(this);
+		controlsPanel.add(addArrowButton);
+		addMarkButton = new JButton("add Mark");
+		addMarkButton.addActionListener(this);
+		controlsPanel.add(addMarkButton);
+		mainPanel.add(controlsPanel, BorderLayout.NORTH);
+		ImageWithClickableParts app = new ImageWithClickableParts(svgFile);
+		app.registerSelectedPartListener(this);
+		Component svgImage = app.getAsComponent();
+		mainPanel.add(svgImage, BorderLayout.CENTER);
+		getContentPane().add(mainPanel);
 	}
 
-	private JSVGCanvas	svgCanvas	= new JSVGCanvas();
-
-	public JComponent createComponents(File svgFile) throws Exception {
-		final JPanel panel = new JPanel(new BorderLayout());
-		panel.add(svgCanvas, BorderLayout.CENTER);
-		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
-		svgCanvas.setURI(svgFile.toURL().toString());
-		svgCanvas.enableInputMethods(true);
-
-		svgCanvas.addGVTTreeBuilderListener(new GVTTreeBuilderAdapter() {
-
-			@Override
-			public void gvtBuildStarted(GVTTreeBuilderEvent e) {
-				log.info("Build Started...");
-			}
-
-			@Override
-			public void gvtBuildCompleted(GVTTreeBuilderEvent e) {
-				log.info("Build Done.");
-				pack();
-			}
-		});
-
-		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
-
-			@Override
-			public void gvtRenderingPrepare(GVTTreeRendererEvent e) {
-				log.info("Rendering Started...");
-			}
-
-			@Override
-			public void gvtRenderingCompleted(GVTTreeRendererEvent e) {
-				log.info("gvtRenderingCompleted");
-				registerListener("fr");
-				registerListener("es");
-				//				registerListener("aaa");
-				//				registerListener("circle");
-
-			}
-		});
-
-		return panel;
+	@Override
+	public void partSelected(String partKey, SelectedPartsState event) {
+		log.info("{} selected", partKey);
+		displaySelectedParts(event);
 	}
 
-	protected void registerListener(String id) {
-		Element elt = svgCanvas.getSVGDocument().getElementById(id);
-		EventTarget t = (EventTarget) elt;
-		t.addEventListener("click", new ClickHandler(), false);
+	@Override
+	public void partUnSelected(String partKey, SelectedPartsState event) {
+		log.info("{} unselected", partKey);
+		displaySelectedParts(event);
 	}
 
-	public class ClickHandler implements EventListener {
+	private void displaySelectedParts(SelectedPartsState event) {
+		log.info("The following parts are currently selected: {}", event.getSelectedPartsKeys());
+	}
 
-		@Override
-		public void handleEvent(Event evt) {
-			log.error("Click on " + ((Element) evt.getTarget()).getAttribute("id"));
-		}
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+
 	}
 
 }
