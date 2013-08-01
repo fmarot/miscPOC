@@ -25,8 +25,10 @@ public class SVGApplication extends JFrame implements SelectedPartListener, Acti
 
 			@Override
 			public void run() {
-				String filename = "countries.svg";
+				//				String filename = "countries.svg";
 				//				String filename = "test.svg";
+				String filename = "test02.svg";
+				//				String filename = "16.svg";
 				//				String filename = "circle.svg";
 				File svgFile = new File("src/main/resources/" + filename);
 				SVGApplication app = new SVGApplication(svgFile);

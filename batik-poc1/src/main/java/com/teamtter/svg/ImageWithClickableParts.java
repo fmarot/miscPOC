@@ -5,8 +5,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,9 +40,11 @@ public class ImageWithClickableParts implements EventListener {
 	private static final String						FILL_PROPERTY						= "fill";
 	private static final String						STROKE_WIDTH_PROPERTY				= "stroke-width";
 	private static final String						STROKE_COLOR_PROPERTY				= "stroke";
+	private static final String						STROKE_OPACITY_PROPERTY				= "stroke-opacity";
 
+	private static final String						STROKE_OPACITY_PROPERTY_OPAQUE		= "1.0";
 	private static final String						FILL_PROPERTY_HIGHLIGHTED			= "rgb(255,50,50)";
-	private static final String						STROKE_WIDTH_PROPERTY_HIGHLIGHTED	= "70";
+	private static final String						STROKE_WIDTH_PROPERTY_HIGHLIGHTED	= "7";
 	private static final String						STROKE_COLOR_PROPERTY_HIGHLIGHTED	= "black";
 
 	private static final String						SENSITIVE_ZONE_IDENTIFIER			= "oleazone";
@@ -98,12 +102,27 @@ public class ImageWithClickableParts implements EventListener {
 		String zoneKey = zoneAttributes.getNamedItem(SENSITIVE_ZONE_IDENTIFIER).getNodeValue();
 
 		Node fillProperty = zoneAttributes.getNamedItem(FILL_PROPERTY);
-		restoreOrBackupAndApplyProperty(fillProperty, objAndPropertyFill, savedFillPropertyValue, zoneKey, FILL_PROPERTY_HIGHLIGHTED);
+		restoreOrBackupAndApplyProperty(zoneAttributes, fillProperty, objAndPropertyFill, savedFillPropertyValue, zoneKey, FILL_PROPERTY_HIGHLIGHTED);
 		Node strokeWidthProperty = zoneAttributes.getNamedItem(STROKE_WIDTH_PROPERTY);
-		restoreOrBackupAndApplyProperty(strokeWidthProperty, objAndPropertyStroke, savedStrokeWidthPropertyValue, zoneKey, STROKE_WIDTH_PROPERTY_HIGHLIGHTED);
+		restoreOrBackupAndApplyProperty(zoneAttributes, strokeWidthProperty, objAndPropertyStroke, savedStrokeWidthPropertyValue, zoneKey, STROKE_WIDTH_PROPERTY_HIGHLIGHTED);
 		Node strokeColorProperty = zoneAttributes.getNamedItem(STROKE_COLOR_PROPERTY);
-		restoreOrBackupAndApplyProperty(strokeColorProperty, objAndPropertyStrokeColor, savedStrokeColorPropertyValue, zoneKey, STROKE_COLOR_PROPERTY_HIGHLIGHTED);
+		restoreOrBackupAndApplyProperty(zoneAttributes, strokeColorProperty, objAndPropertyStrokeColor, savedStrokeColorPropertyValue, zoneKey, STROKE_COLOR_PROPERTY_HIGHLIGHTED);
 
+		notifyListeners(zoneKey, true);
+
+	}
+
+	protected void restoreOrBackupAndApplyProperty(NamedNodeMap zoneAttributes, Node namedItem, ObjectAndProperty<Element> objAndProperty,
+			String savedPropertyValue, String zoneKey, String highlightedValue) {
+		if (savedPropertyValue != null) {	// restore original property value
+			//			zoneAttributes.removeNamedItem(namedItem.getNodeName());
+			namedItem.setNodeValue(savedPropertyValue);
+			nodeAndProperty2Value.remove(objAndProperty);
+		} else {	// backup original property and replace it
+			String targetOriginalPropertyValue = namedItem.getNodeValue();
+			nodeAndProperty2Value.put(objAndProperty, targetOriginalPropertyValue);
+			namedItem.setNodeValue(highlightedValue);
+		}
 	}
 
 	/** clean the attributes of this Element so that we can override some and set some values.
@@ -113,34 +132,26 @@ public class ImageWithClickableParts implements EventListener {
 
 		// remove the style so we are able to override it using full blown attributes instead of concatenated stuffs in the 'style' attribute
 		if (zoneAttributes.getNamedItem(STYLE_PROPERTY) != null) {
+			log.warn("Setting default {}", STYLE_PROPERTY);
 			sensitiveZone.setAttribute(STYLE_PROPERTY, "");
 		}
 		// If no FILL_PROPERTY defined, initialize it to a color by default
 		if (zoneAttributes.getNamedItem(FILL_PROPERTY) == null) {
+			log.warn("Setting default {}", FILL_PROPERTY);
 			sensitiveZone.setAttribute(FILL_PROPERTY, "white");
 		}
 		// If no STROKE_WIDTH_PROPERTY defined, initialize it to a size by default
 		if (zoneAttributes.getNamedItem(STROKE_WIDTH_PROPERTY) == null) {
-			sensitiveZone.setAttribute(STROKE_WIDTH_PROPERTY, "10");
+			log.warn("Setting default {}", STROKE_WIDTH_PROPERTY);
+			sensitiveZone.setAttribute(STROKE_WIDTH_PROPERTY, "0");
 		}
 		// If no STROKE_PROPERTY defined, initialize it to a color by default
 		if (zoneAttributes.getNamedItem(STROKE_COLOR_PROPERTY) == null) {
+			log.warn("Setting default {}", STROKE_COLOR_PROPERTY);
 			sensitiveZone.setAttribute(STROKE_COLOR_PROPERTY, "grey");
 		}
-	}
 
-	protected void restoreOrBackupAndApplyProperty(Node namedItem, ObjectAndProperty<Element> objAndProperty,
-			String savedPropertyValue, String zoneKey, String highlightedValue) {
-		if (savedPropertyValue != null) {	// restore original property value
-			namedItem.setNodeValue(savedPropertyValue);
-			nodeAndProperty2Value.remove(objAndProperty);
-			notifyListeners(zoneKey, false);
-		} else {	// backup original property and replace it
-			String targetOriginalPropertyValue = namedItem.getNodeValue();
-			nodeAndProperty2Value.put(objAndProperty, targetOriginalPropertyValue);
-			namedItem.setNodeValue(highlightedValue);
-			notifyListeners(zoneKey, true);
-		}
+		//		sensitiveZone.setAttribute(STROKE_OPACITY_PROPERTY, STROKE_OPACITY_PROPERTY_OPAQUE);
 	}
 
 	protected void addListenersToSensitiveZones() {
@@ -196,7 +207,7 @@ public class ImageWithClickableParts implements EventListener {
 
 	/** @return an object describing the current state of the selected parts */
 	private SelectedPartsState createCurrentSelectedPartsState() {
-		List<String> selectedKeys = new ArrayList<String>();
+		Set<String> selectedKeys = new HashSet<String>();
 		for (ObjectAndProperty<Element> objAndProp : nodeAndProperty2Value.keySet()) {
 			Element element = objAndProp.getObject();
 			String key = element.getAttributes().getNamedItem(SENSITIVE_ZONE_IDENTIFIER).getNodeValue();

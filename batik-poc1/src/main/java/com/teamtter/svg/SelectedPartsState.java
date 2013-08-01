@@ -1,11 +1,11 @@
 package com.teamtter.svg;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.Data;
 
 @Data
 public class SelectedPartsState {
 
-	private List<String>	selectedPartsKeys;
+	private Set<String>	selectedPartsKeys;
 }
